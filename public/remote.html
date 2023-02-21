@@ -17,12 +17,15 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-
     let socket;
     let currentSocketId = [];
     let $cursor;
+    let targetSocketId;
 
     const init = () => {
+      targetSocketId = getUrlParameter('targetSocketId');
+      console.log(targetSocketId)
+      console.log(targetSocketId);
       socket = io.connect("/");
       socket.on("connect", () => {
         console.log(`Connected: ${socket.id}`);
@@ -32,10 +35,20 @@
       window.addEventListener(`touchmove`, (e) => handleTouchMove(e));
     };
 
+    // getUrlParameters
+    const getUrlParameter = (name) => {
+      name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+      const regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+      const results = regex.exec(location.search);
+      return results === null
+        ? false
+        : decodeURIComponent(results[1].replace(/\+/g, " "));
+    };
+
     // HandleMouseMove
     const handleMouseMove = (e) => {
       if (socket.connected) {
-        socket.emit(`update`, {
+        socket.emit(`update`, targetSocketId, {
           x: e.clientX / window.innerWidth,
           y: e.clientY / window.innerHeight,
         });
@@ -45,7 +58,7 @@
     // HandleTouchMove
     const handleTouchMove = (e) => {
       if (socket.connected) {
-        socket.emit(`update`, {
+        socket.emit(`update`, targetSocketId, {
           x: e.touches[0].clientX / window.innerWidth,
           y: e.touches[0].clientY / window.innerHeight,
         });

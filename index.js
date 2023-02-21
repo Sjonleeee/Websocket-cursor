@@ -15,19 +15,14 @@ server.listen(port, () => {
 
 const clients = {};
 
-io.on('connection', (socket) => {
-  console.log('connection');
-
-  clients[socket.id] = {
-    id: socket.id,
-    x: Math.random(),
-    y: Math.random(),
-  };
+io.on("connection", (socket) => {
+  clients[socket.id] = { id: socket.id };
+  console.log("connection");
 
   // Update
-  socket.on('update', (targetSocketId, data) => {
+  socket.on("update", (targetSocketId, data) => {
     if (clients[targetSocketId]) {
-      socket.io(targetSocketId.emit('update', socket.id, data));
+      io.to(targetSocketId).emit("update", socket.id, data);
     }
   });
 
@@ -36,4 +31,4 @@ io.on('connection', (socket) => {
   });
 });
 
-
+app.use(express.static("public"));

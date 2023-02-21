@@ -23,7 +23,7 @@
     </style>
   </head>
   <body>
-    <p><a href="./remote.html" id="remoteUrl">Open remote controller</a></p>
+    <p><a href="#" id="remoteUrl">Open remote controller</a></p>
   </body>
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -38,7 +38,7 @@
       if (!$cursor) {
         $cursor = document.createElement("div");
         $cursor.classList.add("cursor");
-        $cursor.setAttribute("id", `client`);
+        $cursor.setAttribute("id", `cursor`);
         document.body.appendChild($cursor);
       }
 
@@ -46,57 +46,44 @@
       socket.on("connect", () => {
         console.log(`Connected: ${socket.id}`);
         $remoteUrl.textContent = socket.id;
-        // $remoteUrl.setAttribute('href', 'http://localhost/remote.html?targetSocketId=' + socket.id)
+        $remoteUrl.setAttribute(
+          "href",
+          `./remote.html?targetSocketId=${socket.id}`
+        );
       });
 
-      // // Mousemove event
-      // window.addEventListener("mousemove", (event) => {
-      //   socket.emit("update", {
-      //     x: event.clientX / window.innerWidth,
-      //     y: event.clientY / window.innerHeight,
-      //   });
-      // });
-
-      // Touch move event
-      window.addEventListener("touchmove", (event) => {
-        console.log(event.touches[0]);
-        socket.emit("update", {
-          x: event.touches[0].clientX / window.innerWidth,
-          y: event.touches[0].clientY / window.innerHeight,
-        });
+      socket.on(`update`, (senderId, data) => {
+        $cursor.style.left = `${data.x * window.innerWidth}px`;
+        $cursor.style.top = `${data.x * window.innerHeight}px`;
       });
-
-      socket.on("update", (senderId, data) => {
-        for (const clientId in data) {
-          $cursor.style.left = `${data.x * window.innerWidth}px`;
-          $cursor.style.top = `${data.y * window.innerHeight}px`;
-        }
-        // window.addEventListener(`mousemove`, e => handleMouseMove(e));
-      });
-
-      // const handleMouseMove = (e) => {
-      //   if (socket.connected) {
-      //     socket.emit(`update`, {
-      //       x: event.clientX / window.innerWidth,
-      //       y: event.clientY / window.innerHeight,
-      //     });
-      //   }
-      // };
-
-      // // currentSocketId = updatedSocketsId;
-
-      // const removedSocketIds = socketIds.filter((socketId) => {
-      //   return updatedSocketsId.indexOf(socketId) === -1;
-      // });
-      // if (removedSocketIds.lengt > 0) {
-      //   removedSocketIds.forEach(removedSocketId);
-      //   let $cursor = document.getElementById(removedSocketId);
-      //   if ($cursor) {
-      //     $cursor.parentNode.removeChild($cursor);
-      //   }
-      // }
-      // });
+      window.addEventListener("mousemove", (event) => handlesMouseMove(e));
     };
+
+      const handleMouseMove = (e) => {
+        if (socket.connected) {
+          socket.emit(`update`, {
+            x: e.clientX / window.innerWidth,
+            y: e.clientY / window.innerHeight,
+          });
+        }
+    };
+
+    window.addEventListener("mousemove", (event) => {
+      // Mousemove event
+      socket.emit("update", {
+        x: event.clientX / window.innerWidth,
+        y: event.clientY / window.innerHeight,
+      });
+    });
+
+    // Touch move event
+    window.addEventListener("touchmove", (event) => {
+      console.log(event.touches[0]);
+      socket.emit("update", {
+        x: event.touches[0].clientX / window.innerWidth,
+        y: event.touches[0].clientY / window.innerHeight,
+      });
+    });
 
     init();
   </script>
