@@ -34,10 +34,20 @@
         console.log(`Connected: ${socket.id}`);
       });
 
+      // Mousemove event
       window.addEventListener("mousemove", (event) => {
         socket.emit("update", {
           x: event.clientX / window.innerWidth,
           y: event.clientY / window.innerHeight,
+        });
+      });
+
+      // Touch move event
+      window.addEventListener("touchmove", (event) => {
+        console.log(event.touches[0])
+        socket.emit("update", {
+          x: event.touches[0].clientX / window.innerWidth,
+          y:event.touches[0].clientY / window.innerHeight,
         });
       });
 
@@ -57,20 +67,19 @@
           }
         }
         const updatedSocketsId = Object.keys(clients);
-        currentSocketId = updatedSocketsId
 
-        const removedSocketIds = socketIds.filter(socketId => {
-          return updatedSocketsId.indexOf(socketId) === -1
-        })
+        // currentSocketId = updatedSocketsId;
+
+        const removedSocketIds = socketIds.filter((socketId) => {
+          return updatedSocketsId.indexOf(socketId) === -1;
+        });
         if (removedSocketIds.lengt > 0) {
-          removedSocketIds.forEach(removedSocketIds)
-          let $cursor = document.getElementById(removedSocketIds)
+          removedSocketIds.forEach(removedSocketId);
+          let $cursor = document.getElementById(removedSocketId);
           if ($cursor) {
-            $cursor.parentNode.removeChild($cursor)
+            $cursor.parentNode.removeChild($cursor);
           }
         }
-        console.log(removedSocketIds)
-        console.log(currentSocketId, updatedSocketsId)
       });
     };
 
