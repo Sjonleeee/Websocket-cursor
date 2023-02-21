@@ -27,60 +27,69 @@
   <script>
     let socket;
     let currentSocketId = [];
+    let $cursor;
 
     const init = () => {
+      $cursor = document.querySelector(`#cursor`);
+      if (!$cursor) {
+        $cursor = document.createElement("div");
+        $cursor.setAttribute("id", `client`);
+        $cursor.classList.add("cursor");
+        document.body.appendChild($cursor);
+      }
+
       socket = io.connect("/");
       socket.on("connect", () => {
         console.log(`Connected: ${socket.id}`);
       });
 
-      // Mousemove event
-      window.addEventListener("mousemove", (event) => {
-        socket.emit("update", {
-          x: event.clientX / window.innerWidth,
-          y: event.clientY / window.innerHeight,
-        });
-      });
+      // // Mousemove event
+      // window.addEventListener("mousemove", (event) => {
+      //   socket.emit("update", {
+      //     x: event.clientX / window.innerWidth,
+      //     y: event.clientY / window.innerHeight,
+      //   });
+      // });
 
       // Touch move event
       window.addEventListener("touchmove", (event) => {
-        console.log(event.touches[0])
+        console.log(event.touches[0]);
         socket.emit("update", {
           x: event.touches[0].clientX / window.innerWidth,
-          y:event.touches[0].clientY / window.innerHeight,
+          y: event.touches[0].clientY / window.innerHeight,
         });
       });
 
-      socket.on("clients", (clients) => {
-        for (const clientId in clients) {
-          if (clients.hasOwnProperty(clientId)) {
-            const client = clients[clientId];
-            let $cursor = document.getElementById(client.id);
-            if (!$cursor) {
-              $cursor = document.createElement("div");
-              $cursor.setAttribute("id", client.id);
-              $cursor.classList.add("cursor");
-              document.body.appendChild($cursor);
-            }
-            $cursor.style.left = `${client.x * window.innerWidth}px`;
-            $cursor.style.top = `${client.y * window.innerHeight}px`;
-          }
+      socket.on("update", (senderId, data) => {
+        for (const clientId in data) {
+          $cursor.style.left = `${data.x * window.innerWidth}px`;
+          $cursor.style.top = `${data.y * window.innerHeight}px`;
         }
-        const updatedSocketsId = Object.keys(clients);
-
-        // currentSocketId = updatedSocketsId;
-
-        const removedSocketIds = socketIds.filter((socketId) => {
-          return updatedSocketsId.indexOf(socketId) === -1;
-        });
-        if (removedSocketIds.lengt > 0) {
-          removedSocketIds.forEach(removedSocketId);
-          let $cursor = document.getElementById(removedSocketId);
-          if ($cursor) {
-            $cursor.parentNode.removeChild($cursor);
-          }
-        }
+        // window.addEventListener(`mousemove`, e => handleMouseMove(e));
       });
+
+      // const handleMouseMove = (e) => {
+      //   if (socket.connected) {
+      //     socket.emit(`update`, {
+      //       x: event.clientX / window.innerWidth,
+      //       y: event.clientY / window.innerHeight,
+      //     });
+      //   }
+      // };
+
+      // // currentSocketId = updatedSocketsId;
+
+      // const removedSocketIds = socketIds.filter((socketId) => {
+      //   return updatedSocketsId.indexOf(socketId) === -1;
+      // });
+      // if (removedSocketIds.lengt > 0) {
+      //   removedSocketIds.forEach(removedSocketId);
+      //   let $cursor = document.getElementById(removedSocketId);
+      //   if ($cursor) {
+      //     $cursor.parentNode.removeChild($cursor);
+      //   }
+      // }
+      // });
     };
 
     init();
