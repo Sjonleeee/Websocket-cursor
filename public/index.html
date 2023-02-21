@@ -22,9 +22,13 @@
       }
     </style>
   </head>
-  <body></body>
+  <body>
+    <p><a href="./remote.html" id="remoteUrl">Open remote controller</a></p>
+  </body>
   <script src="/socket.io/socket.io.js"></script>
   <script>
+    const $remoteUrl = document.getElementById("remoteUrl");
+
     let socket;
     let currentSocketId = [];
     let $cursor;
@@ -33,14 +37,16 @@
       $cursor = document.querySelector(`#cursor`);
       if (!$cursor) {
         $cursor = document.createElement("div");
-        $cursor.setAttribute("id", `client`);
         $cursor.classList.add("cursor");
+        $cursor.setAttribute("id", `client`);
         document.body.appendChild($cursor);
       }
 
       socket = io.connect("/");
       socket.on("connect", () => {
         console.log(`Connected: ${socket.id}`);
+        $remoteUrl.textContent = socket.id;
+        // $remoteUrl.setAttribute('href', 'http://localhost/remote.html?targetSocketId=' + socket.id)
       });
 
       // // Mousemove event

@@ -9,22 +9,15 @@
       body {
         position: absolute;
       }
-
-      .cursor {
-        position: absolute; /* or fixed */
-        top: 0;
-        left: 0;
-        width: 50px;
-        height: 50px;
-        background-color: red;
-        border-radius: 50%;
-        transition: all 0.05s;
-      }
     </style>
   </head>
-  <body></body>
+  <body>
+    <p>Hallo</p>
+  </body>
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
     let socket;
     let currentSocketId = [];
     let $cursor;
