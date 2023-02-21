@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sockets Server</title>
+    <style>
+      body {
+        position: absolute;
+      }
+
+      .cursor {
+        position: absolute; /* or fixed */
+        top: 0;
+        left: 0;
+        width: 50px;
+        height: 50px;
+        background-color: red;
+        border-radius: 50%;
+        transition: all 0.05s;
+      }
+    </style>
+  </head>
+  <body></body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    let socket;
+
+    const init = () => {
+      socket = io.connect("/");
+      socket.on("connect", () => {
+        console.log(`Connected: ${socket.id}`);
+      });
+
+      window.addEventListener("mousemove", (event) => {
+        socket.emit("update", {
+          x: event.clientX / window.innerWidth,
+          y: event.clientY / window.innerHeight,
+        });
+      });
+
+      socket.on("clients", (clients) => {
+        for (const clientId in clients) {
+          if (clients.hasOwnProperty(clientId)) {
+            const client = clients[clientId];
+            let $cursor = document.getElementById(client.id);
+            if (!$cursor) {
+              $cursor = document.createElement("div");
+              $cursor.setAttribute("id", client.id);
+              $cursor.classList.add("cursor");
+              document.body.appendChild($cursor);
+            }
+            $cursor.style.left = `${client.x * window.innerWidth}px`;
+            $cursor.style.top = `${client.y * window.innerHeight}px`;
+          }
+        }
+      });
+    };
+
+    init();
+  </script>
+</html>
