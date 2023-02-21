@@ -36,7 +36,4 @@ io.on('connection', (socket) => {
   });
 });
 
-// Timer
-setInterval(() => {
-  io.emit('clients', clients);
-}, 100);
+
