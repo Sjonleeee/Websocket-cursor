@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sockets Server</title>
+    <style>
+      body {
+        position: absolute;
+      }
+
+      .cursor {
+        position: absolute; /* or fixed */
+        top: 0;
+        left: 0;
+        width: 50px;
+        height: 50px;
+        background-color: red;
+        border-radius: 50%;
+        transition: all 0.05s;
+      }
+    </style>
+  </head>
+  <body></body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    let socket;
+    let currentSocketId = [];
+    let $cursor;
+
+    const init = () => {
+      socket = io.connect("/");
+      socket.on("connect", () => {
+        console.log(`Connected: ${socket.id}`);
+      });
+
+      window.addEventListener(`mousemove`, (e) => handleMouseMove(e));
+      window.addEventListener(`touchmove`, (e) => handleTouchMove(e));
+    };
+
+    // HandleMouseMove
+    const handleMouseMove = (e) => {
+      if (socket.connected) {
+        socket.emit(`update`, {
+          x: e.clientX / window.innerWidth,
+          y: e.clientY / window.innerHeight,
+        });
+      }
+    };
+
+    // HandleTouchMove
+    const handleTouchMove = (e) => {
+      if (socket.connected) {
+        socket.emit(`update`, {
+          x: e.touches[0].clientX / window.innerWidth,
+          y: e.touches[0].clientY / window.innerHeight,
+        });
+      }
+    };
+
+    init();
+  </script>
+</html>
