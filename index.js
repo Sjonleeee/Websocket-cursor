@@ -25,10 +25,10 @@ io.on('connection', (socket) => {
   };
 
   // Update
-  socket.on('update', (coords) => {
-    console.log('Recieved', coords);
-    clients[socket.id].x = coords.x;
-    clients[socket.id].y = coords.y;
+  socket.on('update', (targetSocketId, data) => {
+    if (clients[targetSocketId]) {
+      socket.io(targetSocketId.emit('update', socket.id, data));
+    }
   });
 
   socket.on("disconnect", () => {
