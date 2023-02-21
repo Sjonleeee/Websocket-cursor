@@ -26,6 +26,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     let socket;
+    let currentSocketId = [];
 
     const init = () => {
       socket = io.connect("/");
@@ -55,6 +56,21 @@
             $cursor.style.top = `${client.y * window.innerHeight}px`;
           }
         }
+        const updatedSocketsId = Object.keys(clients);
+        currentSocketId = updatedSocketsId
+
+        const removedSocketIds = socketIds.filter(socketId => {
+          return updatedSocketsId.indexOf(socketId) === -1
+        })
+        if (removedSocketIds.lengt > 0) {
+          removedSocketIds.forEach(removedSocketIds)
+          let $cursor = document.getElementById(removedSocketIds)
+          if ($cursor) {
+            $cursor.parentNode.removeChild($cursor)
+          }
+        }
+        console.log(removedSocketIds)
+        console.log(currentSocketId, updatedSocketsId)
       });
     };
 
